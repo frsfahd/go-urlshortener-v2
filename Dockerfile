@@ -5,9 +5,9 @@ FROM golang:1.21.0-alpine AS go-builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
-COPY cmd/ ./cmd/
+COPY . .
 # RUN go generate ./...
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o main ./cmd/
+RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd
 
 # Stage 2: Build the npm project
 FROM node:18.16.0-alpine3.17 AS npm-builder
@@ -18,10 +18,11 @@ COPY web/ ./
 RUN npm run build
 
 # Stage 3: Final stage where we put everything together
-FROM debian:10
+FROM alpine:latest
 WORKDIR /app
-COPY --from=go-builder /app/main ./
+COPY --from=go-builder /app/main /app/.env ./
 COPY --from=npm-builder /app/dist ./dist
-ENV PORT=80 DB_URL=mongodb://192.168.224.1:27017 DB_NAME=shortin_db DB_COLLECTION=links
+# ENV PORT=8080 DB_URL=mongodb://192.168.224.1:27017 DB_NAME=shortin_db DB_COLLECTION=links
+EXPOSE 8080
 CMD ["./main"]
 
