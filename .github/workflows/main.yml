@@ -9,6 +9,8 @@ jobs:
     docker:
         runs-on: ubuntu-latest
         environment: Development
+        permissions:
+            packages: write
 
         steps:
             - name: Set up QEMU
