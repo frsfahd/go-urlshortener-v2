@@ -1,4 +1,4 @@
-name: Build and Publish Docker
+name: ci
 
 on:
   push:
@@ -6,33 +6,34 @@ on:
       - '*'
 
 jobs:
-  build-and-push:
+  docker:
     runs-on: ubuntu-latest
-    environment: Development
-
     steps:
-    - name: Check out code
-      uses: actions/checkout@v2
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Extract tag name
-      id: extract_tag
-      run: echo "##[set-output name=tag;]$(echo ${GITHUB_REF#refs/tags/})"
-
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        push: true
-        tags: ghcr.io/${{ github.repository_owner }}/urlshortener:${{ steps.extract_tag.outputs.tag }}
-        secrets: |
-          HOST=${{ secrets.HOST }}, PORT=${{secrets.PORT}}, DB_URL=${{secrets.DB_URL}}, DB_NAME=${{secrets.DB_NAME}}, DB_COLLECTION=${{secrets.DB_COLLECTION}}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Extract tag name
+        id: get_tag
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+      
+      - name: Login to Github Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ghcr.io/${{repository_owner}}/urlshortener:${{ steps.get_tag.outputs.VERSION }}
+          secret-envs: |
+            "HOST=${{ secrets.HOST }}"
+            "PORT=${{ secrets.PORT }}" 
+            "DB_URL=${{ secrets.DB_URL }}
+            "DB_NAME=${{ secrets.DB_NAME }}
+            "DB_COLLECTION=${{ secrets.DB_COLLECTION }}"
