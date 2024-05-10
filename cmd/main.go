@@ -7,7 +7,9 @@ import (
 
 	"github.com/frsfahd/go-urlshortener-v2/web"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 func init() {
@@ -23,6 +25,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:8080, http://127.0.0.1:80",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
+
+	app.Use(recover.New())
 
 	app.Use("/", filesystem.New(filesystem.Config{
 		Root:   http.FS(index),
