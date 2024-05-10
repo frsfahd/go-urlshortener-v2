@@ -6,6 +6,8 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
+# temporary dist/test.txt for enabling go embed
+RUN cd web && mkdir dist && cd dist && touch test.txt
 # RUN go generate ./...
 RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd
 
