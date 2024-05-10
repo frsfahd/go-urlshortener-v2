@@ -30,7 +30,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ghcr.io/${{repository_owner}}/urlshortener:${{ steps.get_tag.outputs.VERSION }}
+          tags: ghcr.io/${{github.repository_owner}}/urlshortener:${{ steps.get_tag.outputs.VERSION }}
           secret-envs: |
             "HOST=${{ secrets.HOST }}"
             "PORT=${{ secrets.PORT }}" 
