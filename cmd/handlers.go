@@ -23,8 +23,8 @@ func CreateLink(c *fiber.Ctx) error {
 		return err
 	}
 
-	log.Printf("long_url: %s", link_data.Long_URL)
-	log.Printf("keyword: %s", link_data.Keyword)
+	// log.Printf("long_url: %s", link_data.Long_URL)
+	// log.Printf("keyword: %s", link_data.Keyword)
 
 	link_data.Short_URL = fmt.Sprintf("%s/%s", HOST, link_data.Keyword)
 
@@ -60,7 +60,7 @@ func Redirect(c *fiber.Ctx) error {
 		log.Println(err)
 	}
 
-	log.Println(link.Long_URL)
+	// log.Println(link.Long_URL)
 
 	return c.Redirect(link.Long_URL, fiber.StatusFound)
 
