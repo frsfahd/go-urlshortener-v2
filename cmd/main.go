@@ -13,6 +13,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
+type Host struct {
+	Fiber *fiber.App
+}
+
 func init() {
 	configEnv()
 	configDB()
@@ -20,42 +24,51 @@ func init() {
 }
 
 func main() {
-	app := fiber.New()
 
-	index, err := fs.Sub(web.Index, "dist")
-	if err != nil {
-		panic(err)
-	}
+	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
-
 	app.Use(recover.New())
 
 	// Logging remote IP and Port
 	app.Use(logger.New(logger.Config{
-		Format: "[${ip}]:${port} ${status} - ${method} ${path}\n",
+		Format: "[${time} - ${ip}]:${port} ${status} - ${method} ${path}\n",
 	}))
 
+	//----------
+	// main site
+	//----------
+	index, err := fs.Sub(web.Index, "dist")
+	if err != nil {
+		panic(err)
+	}
+
 	app.Use("/", filesystem.New(filesystem.Config{
-		Root:   http.FS(index),
-		Index:  "index.html",
-		Browse: false,
+		Root:  http.FS(index),
+		Index: "index.html",
 	}))
+
+	// ----
+	// api (site.HOST/api/vX/)
+	// ----
+	api := app.Group("/api")
+
+	v1 := api.Group("/v1")
+
+	v1.Post("/shorten", CreateLink)
+
+	//------
+	//redirect service
+	//------
 
 	app.Get("/:keyword", Redirect)
 
 	app.Get("/hello", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
-
-	api := app.Group("/api")
-
-	v1 := api.Group("/v1")
-
-	v1.Post("/shorten", CreateLink)
 
 	log.Fatal(app.Listen(":" + PORT))
 }
