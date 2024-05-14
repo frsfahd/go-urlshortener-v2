@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/frsfahd/go-urlshortener-v2/models"
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func CreateLink(c *fiber.Ctx) error {
@@ -15,7 +14,7 @@ func CreateLink(c *fiber.Ctx) error {
 	// long_url := c.FormValue("long_url")
 	// keyword := c.FormValue("keyword")
 
-	var link_data Link
+	var link_data models.Link
 
 	// it needs to parse the request body because while our web submit in form, the axios library submit in json body in default
 	err := c.BodyParser(&link_data)
@@ -28,20 +27,10 @@ func CreateLink(c *fiber.Ctx) error {
 
 	link_data.Short_URL = fmt.Sprintf("%s/%s", HOST, link_data.Keyword)
 
-	// link_data := Link{
-	// 	Long_URL:  long_url,
-	// 	Keyword:   keyword,
-	// 	Short_URL: short_url,
-	// }
-
-	// save to DB (idempotent), using upsert (update/insert) mechanism of mongoDB
-	option := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
-
-	err = linkCollection.FindOneAndUpdate(ctx, bson.M{"keyword": link_data.Keyword}, bson.M{"$set": link_data}, option).Decode(&link_data)
+	err = models.SavetoMongo(link_data, linkCollection, ctx)
 
 	if err != nil {
-		log.Panic(err)
-		return err
+		log.Panicln(err)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(link_data)
@@ -52,9 +41,9 @@ func Redirect(c *fiber.Ctx) error {
 
 	// retrieve the actual link
 	// get the link
-	link := Link{}
-	opts := options.FindOne().SetProjection(bson.M{"long_url": 1})
-	err := linkCollection.FindOne(ctx, bson.M{"keyword": keyword}, opts).Decode(&link)
+	link := &models.Link{}
+
+	err := models.RetrievefromMongo(keyword, link, linkCollection, ctx)
 
 	if err != nil {
 		log.Println(err)

@@ -1,4 +1,4 @@
-package main
+package models
 
 type Link struct {
 	Long_URL  string `bson:"long_url" json:"long_url"`
