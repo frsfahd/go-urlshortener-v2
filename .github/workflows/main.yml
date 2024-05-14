@@ -36,4 +36,10 @@ jobs:
                   push: true
                   tags: ghcr.io/${{github.repository_owner}}/urlshortener:${{ steps.get_tag.outputs.VERSION }}
                   secret-envs: |
-                      HOST=${{ secrets.HOST }}, PORT=${{ secrets.PORT }}, DB_URL=${{ secrets.DB_URL }}, DB_NAME=${{ secrets.DB_NAME }}, DB_COLLECTION=${{ secrets.DB_COLLECTION }}
+                      HOST=${{ secrets.HOST }}
+                      PORT=${{ secrets.PORT }}
+                      DB_URL=${{ secrets.DB_URL }}
+                      DB_NAME=${{ secrets.DB_NAME }}
+                      DB_COLLECTION=${{ secrets.DB_COLLECTION }}
+
+                      FIREBASE_SERVICE_ACC=${{ secrets.FIREBASE_SERVICE_ACC }}

@@ -15,15 +15,16 @@ import (
 )
 
 var (
-	ENV            string
-	HOST           string
-	PORT           string
-	mongoClient    *mongo.Client
-	linkCollection *mongo.Collection
-	ctx            context.Context
-	DB_NAME        string
-	DB_COLLECTION  string
-	client         *firestore.Client
+	ENV                  string
+	HOST                 string
+	PORT                 string
+	FIREBASE_SERVICE_ACC string
+	mongoClient          *mongo.Client
+	linkCollection       *mongo.Collection
+	ctx                  context.Context
+	DB_NAME              string
+	DB_COLLECTION        string
+	client               *firestore.Client
 )
 
 func configEnv() {
@@ -36,6 +37,7 @@ func configEnv() {
 	PORT = os.Getenv("PORT")
 	HOST = os.Getenv("HOST")
 	ENV = os.Getenv("ENV")
+	FIREBASE_SERVICE_ACC = os.Getenv("FIREBASE_SERVICE_ACC")
 
 	log.Printf("%s:%s", HOST, PORT)
 	log.Printf("environment: %s", ENV)
@@ -67,7 +69,8 @@ func configDB() {
 
 func configFirestore() {
 	// Use a service account
-	sa := option.WithCredentialsFile("./firebase-service-acc.json")
+	// sa := option.WithCredentialsFile("./firebase-service-acc.json")
+	sa := option.WithCredentialsJSON([]byte(FIREBASE_SERVICE_ACC))
 	app, err := firebase.NewApp(ctx, nil, sa)
 	if err != nil {
 		log.Fatalln(err)
