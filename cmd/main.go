@@ -35,7 +35,8 @@ func main() {
 
 	// Logging remote IP and Port
 	app.Use(logger.New(logger.Config{
-		Format: "[${time} - ${ip}]:${port} ${status} - ${method} ${path}\n",
+		Format:     "[${time} - ${ip}]:${port} ${status} - ${method} ${path}\n",
+		TimeFormat: "2006-01-02T15:04:05+07:00",
 	}))
 
 	//----------
