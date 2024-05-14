@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"io/fs"
 	"log"
 	"net/http"
@@ -18,8 +19,11 @@ type Host struct {
 }
 
 func init() {
+	ctx = context.Background()
+
 	configEnv()
-	configDB()
+	// configDB()
+	configFirestore()
 
 }
 
@@ -72,4 +76,7 @@ func main() {
 	})
 
 	log.Fatal(app.Listen(":" + PORT))
+
+	defer client.Close()
+
 }

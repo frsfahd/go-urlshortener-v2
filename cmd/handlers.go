@@ -27,7 +27,12 @@ func CreateLink(c *fiber.Ctx) error {
 
 	link_data.Short_URL = fmt.Sprintf("%s/%s", HOST, link_data.Keyword)
 
-	err = models.SavetoMongo(link_data, linkCollection, ctx)
+	switch ENV {
+	case "development":
+		err = models.SavetoMongo(link_data, linkCollection, ctx)
+	case "production":
+		err = models.SavetoFirestore(link_data, ctx, client)
+	}
 
 	if err != nil {
 		log.Panicln(err)
@@ -43,7 +48,14 @@ func Redirect(c *fiber.Ctx) error {
 	// get the link
 	link := &models.Link{}
 
-	err := models.RetrievefromMongo(keyword, link, linkCollection, ctx)
+	var err error
+
+	switch ENV {
+	case "development":
+		err = models.RetrievefromMongo(keyword, link, linkCollection, ctx)
+	case "production":
+		err = models.RetrievefromFirestore(keyword, link, ctx, client)
+	}
 
 	if err != nil {
 		log.Println(err)

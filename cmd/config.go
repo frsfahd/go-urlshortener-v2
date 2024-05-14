@@ -5,13 +5,17 @@ import (
 	"log"
 	"os"
 
+	"cloud.google.com/go/firestore"
+	firebase "firebase.google.com/go/v4"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"google.golang.org/api/option"
 )
 
 var (
+	ENV            string
 	HOST           string
 	PORT           string
 	mongoClient    *mongo.Client
@@ -19,6 +23,7 @@ var (
 	ctx            context.Context
 	DB_NAME        string
 	DB_COLLECTION  string
+	client         *firestore.Client
 )
 
 func configEnv() {
@@ -30,13 +35,14 @@ func configEnv() {
 	// setup server
 	PORT = os.Getenv("PORT")
 	HOST = os.Getenv("HOST")
+	ENV = os.Getenv("ENV")
 
 	log.Printf("%s:%s", HOST, PORT)
+	log.Printf("environment: %s", ENV)
 }
 
 func configDB() {
 	// setup database
-	ctx = context.Background()
 
 	DB_URL := os.Getenv("DB_URL")
 	connectionOpts := options.Client().ApplyURI(DB_URL)
@@ -57,4 +63,19 @@ func configDB() {
 	DB_NAME = os.Getenv("DB_NAME")
 	DB_COLLECTION = os.Getenv("DB_COLLECTION")
 	linkCollection = mongoClient.Database(DB_NAME).Collection(DB_COLLECTION)
+}
+
+func configFirestore() {
+	// Use a service account
+	sa := option.WithCredentialsFile("./firebase-service-acc.json")
+	app, err := firebase.NewApp(ctx, nil, sa)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	client, err = app.Firestore(ctx)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 }
