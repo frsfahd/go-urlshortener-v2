@@ -23,6 +23,8 @@ go.work
 # tmp dir
 tmp
 
+# GCP credentials
+firebase-service-acc.json
 ############################# NodeJS ########################################
 
 # Logs
