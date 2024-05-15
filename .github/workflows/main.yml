@@ -30,21 +30,21 @@ jobs:
                   username: ${{ github.repository_owner }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Decode FIREBASE_SERVICE_ACC
-              id: decode_firebase
-              run: echo "${{ secrets.FIREBASE_SERVICE_ACC }}" | base64 --decode > firebase_service_acc.json
-              shell: bash
+            # - name: Decode FIREBASE_SERVICE_ACC
+            #   id: decode_firebase
+            #   run: echo "${{ secrets.FIREBASE_SERVICE_ACC }}" | base64 --decode > firebase_service_acc.json
+            #   shell: bash
 
             - name: Build and push
               uses: docker/build-push-action@v5.1.0
               with:
                   push: true
                   tags: ghcr.io/${{github.repository_owner}}/urlshortener:${{ steps.get_tag.outputs.VERSION }}
-                  secret-envs: |
-                      HOST=${{ secrets.HOST }}
-                      PORT=${{ secrets.PORT }}
-                      DB_URL=${{ secrets.DB_URL }}
-                      DB_NAME=${{ secrets.DB_NAME }}
-                      DB_COLLECTION=${{ secrets.DB_COLLECTION }}
-                  secrets: |
-                      FIREBASE_SERVICE_ACC=./firebase_service_acc.json
+                  # secret-envs: |
+                  #     HOST=${{ secrets.HOST }}
+                  #     PORT=${{ secrets.PORT }}
+                  #     DB_URL=${{ secrets.DB_URL }}
+                  #     DB_NAME=${{ secrets.DB_NAME }}
+                  #     DB_COLLECTION=${{ secrets.DB_COLLECTION }}
+                  # secrets: |
+                  #     FIREBASE_SERVICE_ACC=./firebase_service_acc.json
