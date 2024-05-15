@@ -20,7 +20,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd
 # Stage 3: Final stage where we put everything together
 FROM alpine:latest
 WORKDIR /app
-COPY --from=go-builder /app/main /app/.env /app/web/dist /app/
+COPY --from=go-builder /app/main /app/web/dist /app/
+# env vars will be supplied by github secrets
 # ENV PORT=8080 DB_URL=mongodb://192.168.224.1:27017 DB_NAME=shortin_db DB_COLLECTION=links
 EXPOSE 8080
 CMD ["./main"]
