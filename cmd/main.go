@@ -22,8 +22,13 @@ func init() {
 	ctx = context.Background()
 
 	configEnv()
-	// configDB()
-	configFirestore()
+
+	switch ENV {
+	case "development":
+		configDB()
+	case "production":
+		configFirestore()
+	}
 
 }
 
