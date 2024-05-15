@@ -8,7 +8,7 @@ on:
 jobs:
     docker:
         runs-on: ubuntu-latest
-        environment: Development
+        environment: Production
         permissions:
             packages: write
 
@@ -30,6 +30,11 @@ jobs:
                   username: ${{ github.repository_owner }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
+            - name: Decode FIREBASE_SERVICE_ACC
+              id: decode_firebase
+              run: echo "${{ secrets.FIREBASE_SERVICE_ACC }}" | base64 --decode > firebase_service_acc.json
+              shell: bash
+
             - name: Build and push
               uses: docker/build-push-action@v5
               with:
@@ -41,4 +46,5 @@ jobs:
                       DB_URL=${{ secrets.DB_URL }}
                       DB_NAME=${{ secrets.DB_NAME }}
                       DB_COLLECTION=${{ secrets.DB_COLLECTION }}
-                      FIREBASE_SERVICE_ACC=${{ secrets.FIREBASE_SERVICE_ACC }}
+                  secrets: |
+                      FIREBASE_SERVICE_ACC=./firebase_service_acc.json
