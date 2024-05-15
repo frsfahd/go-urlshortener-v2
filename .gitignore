@@ -25,6 +25,8 @@ tmp
 
 # GCP credentials
 firebase-service-acc.json
+
+.env
 ############################# NodeJS ########################################
 
 # Logs
