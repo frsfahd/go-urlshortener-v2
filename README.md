@@ -1,3 +1,6 @@
+![](ui.png)
+
+
 ### tech stack
 - react.js
 - daisyUI (tailwind component)
